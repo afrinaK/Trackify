@@ -8,7 +8,7 @@ export default function Layout(){
  const [open,setOpen]=useState(false),[n,setN]=useState({alerts:[],updates:[]});
  useEffect(()=>{api('/notifications').then(setN).catch(()=>{});setOpen(false)},[loc.pathname]);
  const count=n.alerts.length+n.updates.length;
- const links=[['/','Dashboard'],['/c/masters','🎓 Masters'],['/c/private','💼 Private'],['/c/govt','🏛️ Govt'],['/professors','Professors'],...(user.role==='admin'?[['/admin','Admin']]:[])];
+ const links=[['/c/masters','🎓 Masters'],['/c/private','💼 Private'],['/c/govt','🏛️ Govt'],['/professors','Professors'],['/email-templates','✉️ Email templates'],...(user.role==='admin'?[['/admin','Admin']]:[])];
  return(<>
   <header className="top">
    <NavLink to="/" className="logo">🎯 Career Tracker</NavLink>

@@ -40,6 +40,9 @@ const R={
  'DELETE /professors/:id':async id=>{ok(await sb.from('professors').delete().eq('id',id));return null},
  'POST /professors/:id/contacts':async(id,b)=>{const p=ok(await sb.from('professors').select('name').eq('id',id).single());
   ok(await sb.from('professor_contacts').insert({professor_id:id,note:b.note||''}));ok(await sb.from('professors').update({last_contact:today()}).eq('id',id));await log(`Contacted professor ${p.name}`);return null},
+  'GET /email-templates':async()=>ok(await sb.from('email_templates').select('*').order('created_at',{ascending:false})),
+ 'POST /email-templates':async(_,b)=>{if(!b.title||!b.url)throw new Error('Title and link are required.');ok(await sb.from('email_templates').insert({title:b.title,url:b.url,category:b.category||null,notes:b.notes||null}));return null},
+ 'DELETE /email-templates/:id':async id=>{ok(await sb.from('email_templates').delete().eq('id',id));return null},
  'GET /activities':async()=>ok(await sb.from('activities').select('text,created_at').order('id',{ascending:false}).limit(30)),
  'GET /notifications':async()=>{const alerts=[];
   for(const a of ok(await sb.from('applications').select('org,status,deadline,exam_date,interview_date')))
