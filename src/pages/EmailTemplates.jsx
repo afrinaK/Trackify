@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
 
-const CATEGORIES = ["Positive Mails", "Negative Mails", "Follow-up", "Thank you", "Other"];
+const CATEGORIES = ["Positive Mails", "Negative Mails", "Article links", "Follow-up", "Thank you", "Other"];
 const EMPTY = { title: "", url: "", category: CATEGORIES[0], notes: "" };
 
 export default function EmailTemplates() {
