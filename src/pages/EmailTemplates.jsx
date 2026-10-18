@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
 
-const CATEGORIES = ["Professor outreach", "Job application", "Follow-up", "Thank you", "Other"];
+const CATEGORIES = ["Positive Mails", "Negative Mails", "Follow-up", "Thank you", "Other"];
 const EMPTY = { title: "", url: "", category: CATEGORIES[0], notes: "" };
 
 export default function EmailTemplates() {
@@ -55,7 +55,7 @@ export default function EmailTemplates() {
   }
 
   async function onCopy(item) {
-    await navigator.clipboard.writeText(item.url);
+    await navigator.clipboard.writeText(item.notes);
     setCopiedId(item.id);
     setTimeout(() => setCopiedId(null), 1500);
   }
@@ -71,7 +71,7 @@ export default function EmailTemplates() {
           <input name="title" value={form.title} onChange={onChange} required />
         </label>
         <label>Link
-          <input name="url" placeholder="Google Doc, Notion, Gmail draft..." value={form.url} onChange={onChange} required />
+          <input name="url" placeholder="Google Doc, Notion, Gmail draft..." value={form.url} onChange={onChange} />
         </label>
         <label>Category
           <select name="category" value={form.category} onChange={onChange}>
@@ -109,7 +109,7 @@ export default function EmailTemplates() {
                 {item.notes && <p className="muted">{item.notes}</p>}
               </div>
               <div className="nw">
-                <button className="btn" onClick={() => onCopy(item)}>{copiedId === item.id ? "Copied" : "Copy link"}</button>{" "}
+                <button className="btn" onClick={() => onCopy(item)}>{copiedId === item.id ? "Copied" : "Copy"}</button>{" "}
                 <button className="btn danger" onClick={() => onDelete(item.id)}>Delete</button>
               </div>
             </div>
