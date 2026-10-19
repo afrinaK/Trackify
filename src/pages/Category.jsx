@@ -48,12 +48,14 @@ function Inner({cat}){
       <button className="btn danger" onClick={()=>del([...sel])}>Delete selected</button></div>}
      <div className="tablewrap"><table>
       <thead><tr><th><input type="checkbox" checked={page.length>0&&page.every(a=>sel.has(a.id))} onChange={e=>setSel(e.target.checked?new Set(page.map(a=>a.id)):new Set())}/></th>
-       {H('org',cat==='masters'?'University':'Organization')}{H('position',cat==='masters'?'Program':'Position')}{H('deadline','Deadline')}{H('exam_date','Exam')}{H('interview_date','Interview')}{H('status','Status')}<th>Docs</th>{H('days','Days left')}<th>Actions</th></tr></thead>
+       {H('org','University')}{H('position','Program')}{H('circular_date','Circular publish date')}{H('deadline','Application deadline')}<th>University Website</th><th>Application Portal Link</th>{H('status','Status')}<th>Docs</th><th>Actions</th></tr></thead>
       <tbody>{page.map(a=>{const n=nextDays(a);return(<tr key={a.id} className={n!==null&&n<=7?'hotrow':''}>
        <td><input type="checkbox" checked={sel.has(a.id)} onChange={()=>toggle(a.id)}/></td>
-       <td><b>{a.org}</b></td><td>{a.position}</td><td className="nw">{fmt(a.deadline)}</td><td className="nw">{fmt(a.exam_date)}</td><td className="nw">{fmt(a.interview_date)}</td>
-       <td><select className={`badge sel ${statusKind(a.status)}`} value={a.status} onChange={e=>upd(a,{status:e.target.value})}>{c.statuses.map(s=><option key={s}>{s}</option>)}</select></td>
-       <td><button className="link" onClick={()=>setDocs(a)}>📎 {a.docs}</button></td><td><Days n={n}/></td>
+       <td><b>{a.org}</b></td><td>{a.position}</td><td className="nw">{fmt(a.circular_date)}</td><td className="nw">{fmt(a.deadline)}</td>
+      <td>{a.website?<a href={a.website} target="_blank" rel="noreferrer">Visit ↗</a>:'—'}</td>
+      <td>{a.portal_link?<a href={a.portal_link} target="_blank" rel="noreferrer">Apply ↗</a>:'—'}</td>
+      <td><select className={`badge sel ${statusKind(a.status)}`} value={a.status} onChange={e=>upd(a,{status:e.target.value})}>{c.statuses.map(s=><option key={s}>{s}</option>)}</select></td>
+      <td><button className="link" onClick={()=>setDocs(a)}>📎 {a.docs}</button></td>
        <td className="nw"><button className="icon" title="Edit / details" onClick={()=>setEdit(a)}>✏️</button><button className="icon" title="Documents" onClick={()=>setDocs(a)}>📄</button><button className="icon" title="Duplicate" onClick={()=>dup(a)}>⧉</button><button className="icon" title="Delete" onClick={()=>del([a.id])}>🗑️</button></td></tr>)})}
        {!page.length&&<tr><td colSpan={10} className="empty">Nothing here yet. Use “Add new application” to start tracking.</td></tr>}</tbody></table></div>
      <div className="between"><span className="muted">{sorted.length} result{sorted.length===1?'':'s'}</span>
