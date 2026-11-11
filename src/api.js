@@ -14,6 +14,9 @@ const only=(b,keys)=>Object.fromEntries(keys.map(k=>[k,b[k]===''||b[k]===undefin
 const appRow=b=>{if(!CATS[b.category]||!b.org||!b.position)throw new Error('Category, organization and position are required.');
  return{...only(b,AF),status:b.status||CATS[b.category].statuses[0],extra:b.extra||{}}};
 const profRow=b=>{if(!b.name)throw new Error('Professor name is required.');return{...only(b,PF),status:b.status||'Not Contacted'}};
+const UF=['university','application_starts','apply_deadline','test_date','link','status','admit_card_downloaded'];
+const uniRow=b=>{if(!b.university)throw new Error('University name is required.');
+ return{...only(b,UF),status:b.status||'not_applied',admit_card_downloaded:!!b.admit_card_downloaded}};
 const log=async t=>ok(await sb.from('activities').insert({text:t}));
 const ext=n=>n.slice(n.lastIndexOf('.')).toLowerCase();
 const today=()=>new Date().toISOString().slice(0,10);
@@ -40,6 +43,10 @@ const R={
  'DELETE /professors/:id':async id=>{ok(await sb.from('professors').delete().eq('id',id));return null},
  'POST /professors/:id/contacts':async(id,b)=>{const p=ok(await sb.from('professors').select('name').eq('id',id).single());
   ok(await sb.from('professor_contacts').insert({professor_id:id,note:b.note||''}));ok(await sb.from('professors').update({last_contact:today()}).eq('id',id));await log(`Contacted professor ${p.name}`);return null},
+   'GET /universities':async()=>ok(await sb.from('university_admissions').select('*').order('apply_deadline',{ascending:true,nullsFirst:false})),
+ 'POST /universities':async(_,b)=>{ok(await sb.from('university_admissions').insert(uniRow(b)));return null},
+ 'PUT /universities/:id':async(id,b)=>{ok(await sb.from('university_admissions').update(uniRow(b)).eq('id',id));return null},
+ 'DELETE /universities/:id':async(id)=>{ok(await sb.from('university_admissions').delete().eq('id',id));return null},
   'GET /email-templates':async()=>ok(await sb.from('email_templates').select('*').order('created_at',{ascending:false})),
  'POST /email-templates':async(_,b)=>{if(!b.title||!b.url)throw new Error('Title and link are required.');ok(await sb.from('email_templates').insert({title:b.title,url:b.url,category:b.category||null,notes:b.notes||null}));return null},
  'DELETE /email-templates/:id':async id=>{ok(await sb.from('email_templates').delete().eq('id',id));return null},

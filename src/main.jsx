@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Category from './pages/Category.jsx';
 import Professors from './pages/Professors.jsx';
 import EmailTemplates from "./pages/EmailTemplates";
+import UniversityAdmissions from "./pages/UniversityAdmissions";
 import Settings from './pages/Settings.jsx';
 import Admin from './pages/Admin.jsx';
 function Protected(){const {user,ready}=useAuth();
@@ -21,5 +22,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Route element={<Protected/>}>
    <Route index element={<Dashboard/>}/><Route path="c/:cat" element={<Category/>}/><Route path="professors" element={<Professors/>}/>
    <Route path="/email-templates" element={<EmailTemplates />} />
+   <Route path="/universities" element={<UniversityAdmissions />} />
    <Route path="settings" element={<Settings/>}/><Route path="admin" element={<AdminRoute/>}/><Route path="*" element={<Navigate to="/" replace/>}/>
   </Route></Routes></BrowserRouter></AuthProvider></React.StrictMode>);

@@ -1,9 +1,12 @@
+import {useEffect,useState} from 'react';
 import {Link} from 'react-router-dom';
 import {CATS,P_EMAILED,P_POSITIVE,isAccepted,isPending,isRejected,isSubmitted} from '../shared.js';
 import {useData} from '../context.jsx';
 import {daysLeft,fmt} from '../lib.js';
+import {api} from '../api.js';
 import {Badge,Card,Days} from '../components/ui.jsx';
 import Charts from '../components/Charts.jsx';
+//import {supabase} from '../supabaseClient'; // use the same path as your real Supabase client file
 const up=d=>{const n=daysLeft(d);return n!==null&&n>=0};
 function List({title,items,field,empty}){
  return <Card title={title}>{items.length?items.map(a=><Link key={a.id} to={`/c/${a.category}`} className="li">
@@ -11,6 +14,8 @@ function List({title,items,field,empty}){
 }
 export default function Dashboard(){
  const {apps,profs,acts,loading}=useData();
+ const [uni,setUni]=useState(0);
+ useEffect(()=>{api('/universities').then(r=>setUni(r.length)).catch(()=>{})},[]);
  const by=(f,n=5)=>f==='deadline'?apps.filter(a=>up(a.deadline)&&!isSubmitted(a)).sort((x,y)=>x.deadline>y.deadline?1:-1).slice(0,n):apps.filter(a=>up(a[f])).sort((x,y)=>x[f]>y[f]?1:-1).slice(0,n);
  const inCat=k=>apps.filter(a=>a.category===k).length;
  const stats=[['Total applications',apps.length],['Higher studies',inCat('masters')],['Government jobs',inCat('govt')],['Private jobs',inCat('private')],['Submitted',apps.filter(isSubmitted).length],['Pending',apps.filter(isPending).length],['Accepted',apps.filter(isAccepted).length],['Rejected',apps.filter(isRejected).length],
@@ -19,7 +24,9 @@ export default function Dashboard(){
  return(<div className="stack">
   <h1>Dashboard</h1>
   <div className="grid three">{Object.entries(CATS).map(([k,c])=><Link key={k} to={`/c/${k}`} className="cat" style={{background:`linear-gradient(135deg,${c.c1},${c.c2})`}}>
-   <span className="big">{c.icon}</span><h2>{c.label}</h2><p>{c.blurb}</p><b>{inCat(k)} application{inCat(k)===1?'':'s'}</b></Link>)}</div>
+   <span className="big">{c.icon}</span><h2>{c.label}</h2><p>{c.blurb}</p><b>{inCat(k)} application{inCat(k)===1?'':'s'}</b></Link>)}
+   <Link to="/universities" className="cat" style={{background:'linear-gradient(135deg,#0891b2,#059669)'}}>
+    <span className="big">🏫</span><h2>Universities</h2><p>Admission test tracker</p><b>{uni} universit{uni===1?'y':'ies'}</b></Link></div>
   <div className="grid three"><List title="Upcoming exams" items={by('exam_date')} field="exam_date" empty="No exams scheduled."/><List title="Upcoming deadlines" items={by('deadline')} field="deadline" empty="No open deadlines."/><List title="Upcoming interviews" items={by('interview_date')} field="interview_date" empty="No interviews scheduled."/></div>
   <div className="grid stats">{stats.map(([t,n])=><Card key={t}><div className="muted">{t}</div><div className="num">{n}</div></Card>)}</div>
   <Charts apps={apps} profs={profs}/>
